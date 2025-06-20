@@ -31,12 +31,14 @@ app.use(cors(corsOptions));
 
 // custom middleware
 app.use(logger);
+app.use(require('./middleware/credentials'))
 
 // routes
 app.use("/", homeRouter);
 app.use('/register',registerRouter)
 app.use('/auth',authRouter)
 app.use('/refresh',require('./routes/refreshRouter'))
+app.use('/logout',require('./routes/logoutRouter'))
 
 //api routes
 app.use('/api/employee',verifyJWT ,employeeRouter)

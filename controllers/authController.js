@@ -19,10 +19,16 @@ const handleLogin=async(req,res)=>{
     if(!foundUser)
         return res.sendStatus(401)
 
+    const roles = Object.values(foundUser.roles)
     const match = await bcrypt.compare(password,foundUser.password)
     if(match){
         const accessToken = jwt.sign(
-            {'username':foundUser.username},
+            {
+                "UserInfo":{
+                    'username':foundUser.username,
+                    "roles":roles
+                }
+            },
             process.env.ACCESS_TOKEN_SECRET,
             {expiresIn:'120s'}
         )
@@ -39,7 +45,7 @@ const handleLogin=async(req,res)=>{
             path.join(__dirname,'..','models','users.json'),  
             JSON.stringify(usersDB.users)
         )
-        res.cookie('jwt',refreshToken,{httpOnly:true})
+        res.cookie('jwt',refreshToken,{httpOnly:true,sameSite:'none',secure:true})
         res.json({accessToken})
     }
     else
